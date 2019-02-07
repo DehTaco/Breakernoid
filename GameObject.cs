@@ -48,6 +48,15 @@ public class GameObject
         }
     }
 
+    public float Width
+    {
+        get { return texture.Width; }
+    }
+
+    public float Height
+    {
+        get { return texture.Height; }
+    }
 
 
 }

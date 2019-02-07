@@ -19,6 +19,8 @@ namespace BreakernoidsGL
         SpriteBatch spriteBatch;
         Texture2D bgTexture;
         Paddle paddle;
+        Ball ball;
+        List<Block> blocks = new List<Block>();
 
         public Game1()
         {
@@ -56,6 +58,23 @@ namespace BreakernoidsGL
             paddle = new Paddle(this);
             paddle.LoadContent();
             paddle.position = new Vector2(512, 740);
+
+
+            ball = new Ball(this);
+            ball.LoadContent();
+            ball.position = paddle.position;
+            ball.position.Y -= ball.Height + paddle.Height;
+
+
+            for (int i=0; i<15; i++)
+            {
+                Block tempBlock = new Block(this);
+                tempBlock.LoadContent();
+                tempBlock.position = new Vector2(64 + i * 64, 200);
+                blocks.Add(tempBlock);
+            }
+
+
         }
 
         /// <summary>
@@ -81,7 +100,9 @@ namespace BreakernoidsGL
 
             float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
             paddle.Update(deltaTime);
-            
+            ball.Update(deltaTime);
+            CheckCollisions();
+
             base.Update(gameTime);
         }
 
@@ -100,9 +121,68 @@ namespace BreakernoidsGL
             spriteBatch.Begin();
             spriteBatch.Draw(bgTexture, new Vector2(0, 0), Color.White);
             paddle.Draw(spriteBatch);
+            ball.Draw(spriteBatch);
+
+            foreach (Block b in blocks)
+            {
+                b.Draw(spriteBatch);
+            }
+
             spriteBatch.End();
 
             
+        }
+
+        protected void CheckCollisions()
+        {
+            // Wall collisions
+            float radius = ball.Width / 2;
+
+            if (Math.Abs(ball.position.X - 32) < radius)
+            {
+                ball.direction.X = -1.0f * ball.direction.X;
+            }
+
+            else if (Math.Abs(ball.position.X - 992) < radius)
+            {
+                ball.direction.X = -1.0f * ball.direction.X;
+            }
+
+            else if (Math.Abs(ball.position.Y - 32) < radius)
+            {
+                ball.direction.Y = -1.0f * ball.direction.Y;
+            }
+
+            else if (ball.position.Y > (768 + radius))
+            {
+                LoseLife();
+            }
+
+
+
+            //Paddle collisions
+            //Check to see if the ball hits the paddle
+            //Update ball rotation
+
+
+
+
+
+        }
+
+        protected void LoseLife()
+        {
+            
+            paddle.position = new Vector2(512, 740);
+            ball.position = paddle.position;
+            ball.position.Y -= ball.Height + paddle.Height;
+            ball.direction = new Vector2(0.707f, -0.707f);
+        }
+
+
+        protected void Remove()
+        {
+            // Remove the block once the ball hits it
         }
         
     }
